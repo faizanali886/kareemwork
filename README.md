@@ -1,0 +1,2 @@
+# WealthWell
+Empower your financial journey with WealthWell – your personalized finance coaching companion powered by AI. Take control of your financial future, set achievable goals, and unlock your path to prosperity.
