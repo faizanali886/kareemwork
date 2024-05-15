@@ -1,6 +1,8 @@
-import { BRAND } from "@/app/admin/types/brand";
+import { BRAND } from "@/types/brand";
 import Image from "next/image";
 import DropdownDefault from "../Dropdowns/DropdownDefault";
+import React from 'react';
+
 
 const brandData: BRAND[] = [
   {
