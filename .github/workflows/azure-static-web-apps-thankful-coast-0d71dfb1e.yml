@@ -20,9 +20,12 @@ jobs:
           submodules: true
           lfs: false
       - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.17.0'
+        run: |
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install
+          node -v
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
