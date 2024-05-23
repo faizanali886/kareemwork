@@ -13,8 +13,13 @@ interface Params {
   }
 }
 
-export async function generateMetadata({ params } : Params) {
+export async function generateStaticParams() {
+  return articles.map((article) => ({
+    params: { articleId: article.slug },
+  }));
+}
 
+export async function generateMetadata({ params }: Params) {
   const article: ArticleProps = articles.find((article) => article.slug === params.articleId);
 
   return getSEOTags({
@@ -40,7 +45,7 @@ export async function generateMetadata({ params } : Params) {
   });
 }
 
-export default async function Article({ params } : Params) {
+export default async function Article({ params }: Params) {
   const article: ArticleProps = articles.find((article) => article.slug === params.articleId);
   const articlesRelated = articles
     .filter(
