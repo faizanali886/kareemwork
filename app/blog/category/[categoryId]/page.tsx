@@ -1,14 +1,8 @@
-import { categories, articles } from "../../_assets/content";
-import CardArticle from "../../_assets/components/CardArticle";
-import CardCategory from "../../_assets/components/CardCategory";
+import { categories, articles } from "@/app/_assets/content";
+import CardArticle from "@/app/_assets/components/CardArticle";
+import CardCategory from "@/app/_assets/components/CardCategory";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
-
-interface CategoryParams {
-  params: {
-    categoryId: string;
-  };
-}
 
 export async function generateStaticParams() {
   return categories.map((category) => ({
@@ -18,31 +12,16 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function getStaticProps({ params }: CategoryParams) {
-  const category = categories.find((category) => category.slug === params.categoryId);
-
-  if (!category) {
-    return {
-      notFound: true,
-    };
+interface CategoryParams {
+  params: {
+    categoryId: string;
   }
-
-  const articlesInCategory = articles
-    .filter((article) => article.categories.map((c) => c.slug).includes(category.slug))
-    .sort((a, b) => new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf())
-    .slice(0, 3);
-
-  return {
-    props: {
-      category,
-      articlesInCategory,
-      otherCategories: categories.filter((c) => c.slug !== category.slug),
-    },
-  };
 }
 
 export async function generateMetadata({ params }: CategoryParams) {
-  const category = categories.find((category) => category.slug === params.categoryId);
+  const category = categories.find(
+    (category) => category.slug === params.categoryId
+  );
 
   return getSEOTags({
     title: `${category.title} | Blog by ${config.appName}`,
@@ -51,24 +30,23 @@ export async function generateMetadata({ params }: CategoryParams) {
   });
 }
 
-interface CategoryProps {
-  category: {
-    title: string;
-    description: string;
-    slug: string;
-  };
-  articlesInCategory: Array<{
-    slug: string;
-    publishedAt: string;
-    categories: Array<{ slug: string }>;
-  }>;
-  otherCategories: Array<{
-    title: string;
-    slug: string;
-  }>;
-}
+export default async function CategoryPage({ params }: CategoryParams) {
+  const category = categories.find(
+    (category) => category.slug === params.categoryId
+  );
 
-export default function Category({ category, articlesInCategory, otherCategories }: CategoryProps) {
+  if (!category) {
+    // Handle the case where the category is not found
+    return <div>Category not found</div>;
+  }
+
+  const articlesInCategory = articles
+    .filter((article) =>
+      article.categories.map((c) => c.slug).includes(category.slug)
+    )
+    .sort((a, b) => new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf())
+    .slice(0, 3);
+
   return (
     <>
       <section className="mt-12 mb-24 md:mb-32 max-w-3xl mx-auto text-center">
@@ -98,9 +76,11 @@ export default function Category({ category, articlesInCategory, otherCategories
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {otherCategories.map((category) => (
-            <CardCategory key={category.slug} category={category} tag="h3" />
-          ))}
+          {categories
+            .filter((c) => c.slug !== category.slug)
+            .map((category) => (
+              <CardCategory key={category.slug} category={category} tag="h3" />
+            ))}
         </div>
       </section>
     </>
