@@ -1,8 +1,9 @@
-import { categories, articles } from "@/app/_assets/content";
-import CardArticle from "@/app/_assets/components/CardArticle";
-import CardCategory from "@/app/_assets/components/CardCategory";
+import { categories, articles } from "../../_assets/content";
+import CardArticle from "../../_assets/components/CardArticle";
+import CardCategory from "../../_assets/components/CardCategory";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
+
 
 export async function generateStaticParams() {
   return categories.map((category) => ({
