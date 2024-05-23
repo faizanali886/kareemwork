@@ -25,6 +25,8 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install
+      - name: Install Sharp
+        run: npm install sharp
       - name: Build
         run: npm run build
       - name: Upload Build Artifacts
