@@ -4,12 +4,22 @@ import CardCategory from "../../_assets/components/CardCategory";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
 
+
+export async function generateStaticParams() {
+  return categories.map((category) => ({
+    params: {
+      categoryId: category.slug,
+    },
+  }));
+}
+
 interface CategoryParams {
   params: {
     categoryId: string;
   }
 }
-export async function generateMetadata({ params } : CategoryParams) {
+
+export async function generateMetadata({ params }: CategoryParams) {
   const category = categories.find(
     (category) => category.slug === params.categoryId
   );
@@ -21,10 +31,16 @@ export async function generateMetadata({ params } : CategoryParams) {
   });
 }
 
-export default async function Category({ params } : CategoryParams) {
+export default async function CategoryPage({ params }: CategoryParams) {
   const category = categories.find(
     (category) => category.slug === params.categoryId
   );
+
+  if (!category) {
+    // Handle the case where the category is not found
+    return <div>Category not found</div>;
+  }
+
   const articlesInCategory = articles
     .filter((article) =>
       article.categories.map((c) => c.slug).includes(category.slug)
@@ -50,12 +66,7 @@ export default async function Category({ params } : CategoryParams) {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {articlesInCategory.map((article) => (
-            <CardArticle
-              key={article.slug}
-              article={article}
-              tag="h3"
-              showCategory={false}
-            />
+            <CardArticle key={article.slug} article={article} tag="h3" showCategory={false} />
           ))}
         </div>
       </section>
