@@ -7,12 +7,42 @@ import config from "@/config";
 interface CategoryParams {
   params: {
     categoryId: string;
-  }
+  };
 }
-export async function generateMetadata({ params } : CategoryParams) {
-  const category = categories.find(
-    (category) => category.slug === params.categoryId
-  );
+
+export async function generateStaticParams() {
+  return categories.map((category) => ({
+    params: {
+      categoryId: category.slug,
+    },
+  }));
+}
+
+export async function getStaticProps({ params }: CategoryParams) {
+  const category = categories.find((category) => category.slug === params.categoryId);
+
+  if (!category) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const articlesInCategory = articles
+    .filter((article) => article.categories.map((c) => c.slug).includes(category.slug))
+    .sort((a, b) => new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf())
+    .slice(0, 3);
+
+  return {
+    props: {
+      category,
+      articlesInCategory,
+      otherCategories: categories.filter((c) => c.slug !== category.slug),
+    },
+  };
+}
+
+export async function generateMetadata({ params }: CategoryParams) {
+  const category = categories.find((category) => category.slug === params.categoryId);
 
   return getSEOTags({
     title: `${category.title} | Blog by ${config.appName}`,
@@ -21,17 +51,24 @@ export async function generateMetadata({ params } : CategoryParams) {
   });
 }
 
-export default async function Category({ params } : CategoryParams) {
-  const category = categories.find(
-    (category) => category.slug === params.categoryId
-  );
-  const articlesInCategory = articles
-    .filter((article) =>
-      article.categories.map((c) => c.slug).includes(category.slug)
-    )
-    .sort((a, b) => new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf())
-    .slice(0, 3);
+interface CategoryProps {
+  category: {
+    title: string;
+    description: string;
+    slug: string;
+  };
+  articlesInCategory: Array<{
+    slug: string;
+    publishedAt: string;
+    categories: Array<{ slug: string }>;
+  }>;
+  otherCategories: Array<{
+    title: string;
+    slug: string;
+  }>;
+}
 
+export default function Category({ category, articlesInCategory, otherCategories }: CategoryProps) {
   return (
     <>
       <section className="mt-12 mb-24 md:mb-32 max-w-3xl mx-auto text-center">
@@ -50,12 +87,7 @@ export default async function Category({ params } : CategoryParams) {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {articlesInCategory.map((article) => (
-            <CardArticle
-              key={article.slug}
-              article={article}
-              tag="h3"
-              showCategory={false}
-            />
+            <CardArticle key={article.slug} article={article} tag="h3" showCategory={false} />
           ))}
         </div>
       </section>
@@ -66,11 +98,9 @@ export default async function Category({ params } : CategoryParams) {
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {categories
-            .filter((c) => c.slug !== category.slug)
-            .map((category) => (
-              <CardCategory key={category.slug} category={category} tag="h3" />
-            ))}
+          {otherCategories.map((category) => (
+            <CardCategory key={category.slug} category={category} tag="h3" />
+          ))}
         </div>
       </section>
     </>
