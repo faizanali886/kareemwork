@@ -10,7 +10,17 @@ interface AuthorParams {
     authorId: string;
   }
 }
-export async function generateMetadata({ params } : AuthorParams) {
+
+export async function generateStaticParams() {
+  // Generate static paths for authors
+  const paths = authors.map((author) => ({
+    params: { authorId: author.slug },
+  }));
+
+  return paths;
+}
+
+export async function generateMetadata({ params }: AuthorParams) {
   const author = authors.find((author) => author.slug === params.authorId);
 
   return getSEOTags({
@@ -20,7 +30,7 @@ export async function generateMetadata({ params } : AuthorParams) {
   });
 }
 
-export default async function Author({ params } : AuthorParams) {
+export default async function Author({ params }: AuthorParams) {
   const author: AuthorItem = authors.find((author) => author.slug === params.authorId);
   const articlesByAuthor: ArticleProps[] = articles.filter((article) => article.author.slug === author.slug)
     .sort((a, b) => new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf());
