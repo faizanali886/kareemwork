@@ -1,5 +1,5 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-
   reactStrictMode: true,
   images: {
     domains: [
@@ -11,6 +11,7 @@ const nextConfig = {
       "www.bettertechtips.com",
     ],
   },
+  output: 'export', // Add this line for static export
 };
 
 module.exports = nextConfig;
