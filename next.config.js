@@ -11,6 +11,12 @@ const nextConfig = {
     ],
   },
   output: 'export', // Ensure this is set for static export
+
+  // Exclude specific routes from static export
+  exportPathMap: async function (defaultPathMap) {
+    delete defaultPathMap['/api/auth/callback'];
+    return defaultPathMap;
+  },
 };
 
 module.exports = nextConfig;
