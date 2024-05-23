@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "postbuild": "next-sitemap",
-    "start": "next start",
+    "start": "next build && next start", // Ensure the build step is included before starting
     "lint": "next lint",
     "build:frontend:css": "tailwindcss -c tailwind.frontend.config.js -o app/frontend/tailwind.css",
     "build:admin:css": "tailwindcss -c tailwind.admin.config.js -o app/admin/tailwind.css",
